@@ -1,10 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import 'semantic-ui/dist/semantic.min.css';
-import './index.css';
-import App from './App';
-import { BrowserRouter } from 'react-router-dom'
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import store from "./store";
+import WizardForm from "./WizardForm";
 
-ReactDOM.render(<BrowserRouter><App/></BrowserRouter>, document.getElementById('root'));
+const rootEl = document.getElementById("root");
 
-
+ReactDOM.render(
+  <Provider store={store}>
+    <div style={{ padding: 15 }}>
+      <h2>Wizard Example</h2>
+      <WizardForm/>
+    </div>
+  </Provider>,
+  rootEl
+);
