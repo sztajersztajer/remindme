@@ -10,7 +10,7 @@ ReactDOM.render(
   <Provider store={store}>
     <div style={{ padding: 15 }}>
       <h2>Wizard Example</h2>
-      <WizardForm/>
+      <WizardForm onSubmit={()=> {}}/>
     </div>
   </Provider>,
   rootEl

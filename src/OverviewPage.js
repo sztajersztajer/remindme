@@ -1,20 +1,23 @@
 import React from 'react';
-import { reduxForm, formValueSelector} from 'redux-form';
 import { connect } from 'react-redux';
+import { formValueSelector, reduxForm } from 'redux-form';
+//import { getCategories, getProvider } from './service';
 
 let OverviewPage = props => {
-  const { previousPage, title, category, contractEndDate, noticePeriod } = props;
+  console.log(props)
+  const { previousPage, title, category, provider, contractEndDate, noticePeriod } = props;
   return (
     <div>
-    <p>Values</p>
-    <p>Title: {title}</p>
-    <p>Category: {category}</p>
-    <p>contractEndDate: {contractEndDate}</p>
-    <p>noticePeriod: {noticePeriod}</p>
+      <p>Values</p>
+      <p>Title: {title}</p>
+      <p>Category: {category}</p>
+      <p>Provider: {provider}</p>
+      <p>contractEndDate: {contractEndDate}</p>
+      <p>noticePeriod: {noticePeriod}</p>
 
-    <button type="button" className="previous" onClick={previousPage}>
-      Previous
-    </button>
+      <button type="button" className="previous" onClick={previousPage}>
+        Previous
+      </button>
     </div>
     
   );
@@ -33,14 +36,16 @@ OverviewPage = connect(
   state => {
     const title = selector(state, 'title');
     const category = selector(state, 'category');
+    const provider = selector(state, 'provider');
     const contractEndDate = selector(state, 'contractEndDate');
     const noticePeriod = selector(state, 'noticePeriod');
 
     return {
-     title,
-     category,
-     contractEndDate,
-     noticePeriod
+      title,
+      category,
+      provider,
+      contractEndDate,
+      noticePeriod
     }
   }
 )(OverviewPage)

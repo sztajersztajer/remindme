@@ -1,58 +1,109 @@
-import React from 'react';
-import { Field, reduxForm } from 'redux-form';
+import React, {Component} from 'react';
+import { Field, reduxForm, formValueSelector } from 'redux-form';
 import validate from './validate';
 import renderField from './renderField';
-const colors = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'];
-const renderColorSelector = ({ input, meta: { touched, error } }) => (
+import { getCategories, getProvider } from './service';
+import { connect } from 'react-redux';
+
+const renderCategoriesSelector = ({ input, meta: { touched, error }, categories, handleInternalChange }) => (
   <div>
-    <select {...input}>
-      <option value="">Select a color...</option>
-      {colors.map(val => <option value={val} key={val}>{val}</option>)}
+    <select {...input} 
+      onChange={e => {
+          input.onChange(e)
+          handleInternalChange(e)
+        }
+      }
+      >
+      <option value="">Select a category</option>
+      {categories.map(val => <option value={val.id} key={val.id}>{val.categoryName}</option>)}
     </select>
     {touched && error && <span>{error}</span>}
   </div>
 );
 
-const WizardFormFirstPage = props => {
-  const { handleSubmit } = props;
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>Favorite Color</label>
-      <Field name="favoriteColor" component={renderColorSelector} />
-      <Field
-        name="title"
-        type="text"
-        component={renderField}
-        label="Title"
-      />
-      <Field
-        name="category"
-        type="text"
-        component={renderField}
-        label="Category"
-      />
-      <Field
-        name="contractEndDate"
-        type="text"
-        component={renderField}
-        label="Contract End Date"
-      />
-      <Field
-        name="noticePeriod"
-        type="text"
-        component={renderField}
-        label="Notice Period"
-      />
-      <div>
-        <button type="submit" className="next">Next</button>
-      </div>
-    </form>
-  );
-};
+const renderProvidersSelector = ({ input, meta: { touched, error }, categories }) => (
+  <div>
+    <select {...input}>
+      <option value="">Select provider</option>
+      {categories.map(val => <option value={val.id} key={val.id}>{val.company.companyName}</option>)}
+    </select>
+    {touched && error && <span>{error}</span>}
+  </div>
+);
 
-export default reduxForm({
+class WizardFormFirstPage extends Component {
+
+  state = { categories: [], providers: []};
+  
+  componentDidMount() {
+    
+    getCategories().then(data => this.setState({categories: data}));
+    
+    if(this.props.category !== undefined) {
+      getProvider(this.props.category).then(data=> this.setState({providers: data}))
+    }
+  }
+
+  handleCategorychange = e => {
+    getProvider(e.target.value).then(data=> this.setState({providers: data}))
+  }
+
+  render() {
+    console.log(this.props.category)
+    const { handleSubmit } = this.props;
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <label>Category</label>
+        <Field 
+          name="category" 
+          component={renderCategoriesSelector} 
+          categories={this.state.categories}
+          handleInternalChange={this.handleCategorychange}
+        />
+        <Field 
+          name="provider" 
+          component={renderProvidersSelector} 
+          categories={this.state.providers}
+        />
+        <Field
+          name="title"
+          type="text"
+          component={renderField}
+          label="Title"
+        />
+        <Field
+          name="contractEndDate"
+          type="text"
+          component={renderField}
+          label="Contract End Date"
+        />
+        <Field
+          name="noticePeriod"
+          type="text"
+          component={renderField}
+          label="Notice Period"
+        />
+        <div>
+          <button type="submit" className="next">Next</button>
+        </div>
+      </form>
+    );
+  }
+};
+const selector = formValueSelector('wizard') 
+
+export default connect(
+  state => {
+    const category = selector(state, 'category');
+    return {
+     category
+    }
+  }
+
+)(reduxForm({
   form: 'wizard', //                 <------ same form name
   destroyOnUnmount: false, //        <------ preserve form data
   forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
   validate,
-})(WizardFormFirstPage);
+})(WizardFormFirstPage));
