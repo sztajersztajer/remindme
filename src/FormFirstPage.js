@@ -1,32 +1,45 @@
 import React, {Component} from 'react';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
 import validate from './validate';
-import renderField from './renderField';
 import { getCategories, getProvider } from './service';
 import { connect } from 'react-redux';
+import { Form } from 'semantic-ui-react';
 
-const renderCategoriesSelector = ({ input, meta: { touched, error }, categories, handleInternalChange, fieldName, defaultOption }) => (
-  <div>
-    <select {...input} 
-      onChange={e => {
-        input.onChange(e)
-        handleInternalChange(e)
-        }
+const normalizeCategories = categories => {
+  let mapped =categories.map(category => {
+    return { key: category.id, text: category.categoryName, value: category.id }  
+  });
+  return mapped;
+}
+
+const normalizeProviders = providers => {
+  let mapped = providers.map(provider => {
+    return { key: provider.company.id, text: provider.company.companyName, value: provider.company.id }  
+  });
+  return mapped
+}
+
+const renderSelect = field => (
+  <Form.Select
+    label={field.label}
+    name={field.input.name}
+    onChange={(e, { value }) => {
+        field.handleInternalChange(value) 
+        field.input.onChange(value)
       }
-    >
-      <option value="">{defaultOption}</option>
-      {categories.map(val => <option value={val.id} key={val.id}>{fieldName === 'category' ? val.categoryName :val.company.companyName }</option>)}
-    </select>
-    {touched && error && <span>{error}</span>}
-  </div>
+    }
+    options={field.options}
+    placeholder={field.placeholder}
+    value={field.input.value}
+  />
 );
 
 class WizardFormFirstPage extends Component {
 
   state = { categories: [], providers: []};
   
-  componentDidMount() {
-    
+  constructor(props) {
+    super(props)
     getCategories().then(data => this.setState({categories: data}));
     
     if(this.props.category !== undefined) {
@@ -34,54 +47,52 @@ class WizardFormFirstPage extends Component {
     }
   }
 
-  handleCategorychange = e => {
-    getProvider(e.target.value).then(data=> this.setState({providers: data}))
+  handleCategorychange = value => {
+    getProvider(value).then(data => this.setState({providers: data}))
   }
 
   render() {
-    console.log(this.props.category)
     const { handleSubmit } = this.props;
 
     return (
-      <form onSubmit={handleSubmit}>
-        <Field 
-          name="category" 
-          fieldName="category"
-          defaultOption="Select a category"
-          component={renderCategoriesSelector} 
-          categories={this.state.categories}
+      <Form onSubmit={handleSubmit}>
+        <Field
+          component={renderSelect}
+          label="Category"
+          name="category"
+          options={normalizeCategories(this.state.categories)}
+          placeholder="Category"
           handleInternalChange={this.handleCategorychange}
         />
-        <Field 
+        <Field
+          component={renderSelect}
+          label="Provider"
           name="provider"
-          fieldName="provider"
-          defaultOption="Select provider" 
-          component={renderCategoriesSelector} 
-          categories={this.state.providers}
+          options={normalizeProviders(this.state.providers)}
+          placeholder="Provider"
           handleInternalChange={() => {}}
         />
         <Field
+          component={Form.Input}
           name="title"
-          type="text"
-          component={renderField}
           label="Title"
         />
         <Field
           name="contractEndDate"
           type="text"
-          component={renderField}
+          component={Form.Input}
           label="Contract End Date"
         />
         <Field
           name="noticePeriod"
           type="text"
-          component={renderField}
+          component={Form.Input}
           label="Notice Period"
         />
-        <div>
-          <button type="submit" className="next">Next</button>
-        </div>
-      </form>
+        <Form.Group inline>
+          <Form.Button primary type="submit">Submit</Form.Button>
+        </Form.Group>
+      </Form>
     );
   }
 };

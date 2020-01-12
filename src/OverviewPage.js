@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { formValueSelector, reduxForm } from 'redux-form';
 //import { getCategories, getProvider } from './service';
+import { Button } from 'semantic-ui-react';
 
 let OverviewPage = props => {
   console.log(props)
@@ -14,10 +15,7 @@ let OverviewPage = props => {
       <p>Provider: {provider}</p>
       <p>contractEndDate: {contractEndDate}</p>
       <p>noticePeriod: {noticePeriod}</p>
-
-      <button type="button" className="previous" onClick={previousPage}>
-        Previous
-      </button>
+      <Button onClick={previousPage}>Back</Button>
     </div>
     
   );
@@ -27,7 +25,6 @@ OverviewPage = reduxForm({
   form: 'wizard', 
   destroyOnUnmount: false, 
   forceUnregisterOnUnmount: true,
-
 })(OverviewPage);
 
 const selector = formValueSelector('wizard')

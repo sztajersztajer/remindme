@@ -1,6 +1,7 @@
 const validate = values => {
+  console.log(values);
   const errors = {};
-  if (!values.firstName) {
+  if (!values.title) {
     errors.firstName = 'Required';
   }
   if (!values.lastName) {
