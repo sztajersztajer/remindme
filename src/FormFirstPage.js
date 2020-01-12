@@ -5,27 +5,17 @@ import renderField from './renderField';
 import { getCategories, getProvider } from './service';
 import { connect } from 'react-redux';
 
-const renderCategoriesSelector = ({ input, meta: { touched, error }, categories, handleInternalChange }) => (
+const renderCategoriesSelector = ({ input, meta: { touched, error }, categories, handleInternalChange, fieldName, defaultOption }) => (
   <div>
     <select {...input} 
       onChange={e => {
-          input.onChange(e)
-          handleInternalChange(e)
+        input.onChange(e)
+        handleInternalChange(e)
         }
       }
-      >
-      <option value="">Select a category</option>
-      {categories.map(val => <option value={val.id} key={val.id}>{val.categoryName}</option>)}
-    </select>
-    {touched && error && <span>{error}</span>}
-  </div>
-);
-
-const renderProvidersSelector = ({ input, meta: { touched, error }, categories }) => (
-  <div>
-    <select {...input}>
-      <option value="">Select provider</option>
-      {categories.map(val => <option value={val.id} key={val.id}>{val.company.companyName}</option>)}
+    >
+      <option value="">{defaultOption}</option>
+      {categories.map(val => <option value={val.id} key={val.id}>{fieldName === 'category' ? val.categoryName :val.company.companyName }</option>)}
     </select>
     {touched && error && <span>{error}</span>}
   </div>
@@ -54,17 +44,21 @@ class WizardFormFirstPage extends Component {
 
     return (
       <form onSubmit={handleSubmit}>
-        <label>Category</label>
         <Field 
           name="category" 
+          fieldName="category"
+          defaultOption="Select a category"
           component={renderCategoriesSelector} 
           categories={this.state.categories}
           handleInternalChange={this.handleCategorychange}
         />
         <Field 
-          name="provider" 
-          component={renderProvidersSelector} 
+          name="provider"
+          fieldName="provider"
+          defaultOption="Select provider" 
+          component={renderCategoriesSelector} 
           categories={this.state.providers}
+          handleInternalChange={() => {}}
         />
         <Field
           name="title"
