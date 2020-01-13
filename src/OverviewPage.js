@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { formValueSelector, reduxForm } from 'redux-form';
-//import { getCategories, getProvider } from './service';
+//import { getCategories, getProvider } from './service'; //TODO get the option names for these uuid values
 import { Button } from 'semantic-ui-react';
 
-let OverviewPage = props => {
-  console.log(props)
+function OverviewPage(props) {
   const { previousPage, title, category, provider, contractEndDate, noticePeriod } = props;
   return (
     <div>
@@ -15,21 +14,15 @@ let OverviewPage = props => {
       <p>Provider: {provider}</p>
       <p>contractEndDate: {contractEndDate}</p>
       <p>noticePeriod: {noticePeriod}</p>
+
       <Button onClick={previousPage}>Back</Button>
-    </div>
-    
+    </div>  
   );
 };
 
-OverviewPage = reduxForm({
-  form: 'wizard', 
-  destroyOnUnmount: false, 
-  forceUnregisterOnUnmount: true,
-})(OverviewPage);
-
 const selector = formValueSelector('wizard')
 
-OverviewPage = connect(
+export default connect(
   state => {
     const title = selector(state, 'title');
     const category = selector(state, 'category');
@@ -45,6 +38,8 @@ OverviewPage = connect(
       noticePeriod
     }
   }
-)(OverviewPage)
-
-export default OverviewPage;
+)(reduxForm({
+  form: 'wizard', 
+  destroyOnUnmount: false,
+  forceUnregisterOnUnmount: true,
+})(OverviewPage));

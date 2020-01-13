@@ -1,16 +1,17 @@
 const validate = values => {
   const errors = {};
-  if (!values.title) {
-    errors.title = 'Required';
-  }
+
   if (!values.category) {
-    errors.category = 'Required';
+    errors.category = 'Category Required';
   }
   if (!values.provider) {
-    errors.provider = 'Required';
+    errors.provider = 'Provider Required';
+  }
+  if (!values.title) {
+    errors.title = 'Title Required';
   }
   if (!values.contractEndDate) {
-    errors.lastName = 'Required';
+    errors.contractEndDate = 'Contract End Date Required';
   }
   return errors;
 };

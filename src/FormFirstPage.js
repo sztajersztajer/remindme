@@ -3,7 +3,8 @@ import { Field, reduxForm, formValueSelector } from 'redux-form';
 import validate from './validate';
 import { getCategories, getProvider } from './service';
 import { connect } from 'react-redux';
-import { Form, Message } from 'semantic-ui-react';
+import { Form } from 'semantic-ui-react';
+import { inputField, selectField } from './components/wrappedFormControls';
 
 const normalizeCategories = categories => {
   return categories.map(category => {
@@ -16,34 +17,6 @@ const normalizeProviders = providers => {
     return { key: provider.company.id, text: provider.company.companyName, value: provider.company.id }  
   });
 }
-
-const renderSelect = ({ input, options, label, placeholder, meta: { error, touched }, handleInternalChange }) => (
-  <div>
-    <Form.Select
-      label={label}
-      name={input.name}
-      onChange={(e, { value }) => {
-          handleInternalChange(value) 
-          input.onChange(value)
-        }
-      }
-      options={options}
-      placeholder={placeholder}
-      value={input.value}
-    />
-    {touched && error && <Message negative>{error}</Message>}
-  </div>
-);
-
-const renderInput = ({ input, label, meta: { error, touched } }) => (
-  <div>
-    <Form.Input
-      name={input.name}
-      label={label}
-    />
-    {touched && error && <Message negative>{error}</Message>}
-  </div>
-);
 
 class WizardFormFirstPage extends Component {
 
@@ -68,7 +41,7 @@ class WizardFormFirstPage extends Component {
     return (
       <Form onSubmit={handleSubmit}>
         <Field
-          component={renderSelect}
+          component={selectField}
           label="Category"
           name="category"
           options={normalizeCategories(this.state.categories)}
@@ -76,7 +49,7 @@ class WizardFormFirstPage extends Component {
           handleInternalChange={this.handleCategorychange}
         />
         <Field
-          component={renderSelect}
+          component={selectField}
           label="Provider"
           name="provider"
           options={normalizeProviders(this.state.providers)}
@@ -84,20 +57,20 @@ class WizardFormFirstPage extends Component {
           handleInternalChange={() => {}}
         />
         <Field
-          component={renderInput}
+          component={inputField}
           name="title"
           label="Title"
         />
         <Field
           name="contractEndDate"
           type="text"
-          component={Form.Input}
+          component={inputField}
           label="Contract End Date"
         />
         <Field
           name="noticePeriod"
           type="text"
-          component={Form.Input}
+          component={inputField}
           label="Notice Period"
         />
         <Form.Group inline>
