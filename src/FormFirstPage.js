@@ -3,35 +3,46 @@ import { Field, reduxForm, formValueSelector } from 'redux-form';
 import validate from './validate';
 import { getCategories, getProvider } from './service';
 import { connect } from 'react-redux';
-import { Form } from 'semantic-ui-react';
+import { Form, Message } from 'semantic-ui-react';
 
 const normalizeCategories = categories => {
-  let mapped =categories.map(category => {
+  return categories.map(category => {
     return { key: category.id, text: category.categoryName, value: category.id }  
   });
-  return mapped;
 }
 
 const normalizeProviders = providers => {
-  let mapped = providers.map(provider => {
+  return providers.map(provider => {
     return { key: provider.company.id, text: provider.company.companyName, value: provider.company.id }  
   });
-  return mapped
 }
 
-const renderSelect = field => (
-  <Form.Select
-    label={field.label}
-    name={field.input.name}
-    onChange={(e, { value }) => {
-        field.handleInternalChange(value) 
-        field.input.onChange(value)
+const renderSelect = ({ input, options, label, placeholder, meta: { error, touched }, handleInternalChange }) => (
+  <div>
+    <Form.Select
+      label={label}
+      name={input.name}
+      onChange={(e, { value }) => {
+          handleInternalChange(value) 
+          input.onChange(value)
+        }
       }
-    }
-    options={field.options}
-    placeholder={field.placeholder}
-    value={field.input.value}
-  />
+      options={options}
+      placeholder={placeholder}
+      value={input.value}
+    />
+    {touched && error && <Message negative>{error}</Message>}
+  </div>
+);
+
+const renderInput = ({ input, label, meta: { error, touched } }) => (
+  <div>
+    <Form.Input
+      name={input.name}
+      label={label}
+    />
+    {touched && error && <Message negative>{error}</Message>}
+  </div>
 );
 
 class WizardFormFirstPage extends Component {
@@ -73,7 +84,7 @@ class WizardFormFirstPage extends Component {
           handleInternalChange={() => {}}
         />
         <Field
-          component={Form.Input}
+          component={renderInput}
           name="title"
           label="Title"
         />
@@ -107,8 +118,8 @@ export default connect(
   }
 
 )(reduxForm({
-  form: 'wizard', //                 <------ same form name
-  destroyOnUnmount: false, //        <------ preserve form data
-  forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
+  form: 'wizard', 
+  destroyOnUnmount: false,
+  forceUnregisterOnUnmount: true,
   validate,
 })(WizardFormFirstPage));
